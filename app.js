@@ -4,6 +4,10 @@ require('dotenv').config()
 const PORT = process.env.PORT || 4000;
 const app = express();
 
+app.use(cors({
+  origin: '*'
+}))
+
 app.get("/api/biodata", (req, res) => {
   try {
     res.setHeader("Content-Type", "application/json");

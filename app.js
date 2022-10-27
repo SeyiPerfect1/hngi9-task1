@@ -1,12 +1,15 @@
 const express = require("express");
-require('dotenv').config()
+require("dotenv").config();
+const cors = require("cors");
 
 const PORT = process.env.PORT || 4000;
 const app = express();
 
-app.use(cors({
-  origin: '*'
-}))
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.get("/api/biodata", (req, res) => {
   try {

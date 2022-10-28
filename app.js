@@ -15,7 +15,7 @@ app.get("/api/biodata", (req, res) => {
   try {
     res.setHeader("Content-Type", "application/json");
     res.status(200).json({
-      slackUserename: "Oluseyi",
+      slackUsername: "Oluseyi",
       backend: true,
       age: 26,
       bio: "I am Oluseyi, HNGi9 intern from Nigeria. When I'm not writing code, I watch movies",

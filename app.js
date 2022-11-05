@@ -11,6 +11,8 @@ app.use(
   })
 );
 
+app.use(express.json());
+
 app.get("/api/biodata", (req, res) => {
   try {
     res.setHeader("Content-Type", "application/json");
@@ -25,6 +27,39 @@ app.get("/api/biodata", (req, res) => {
       meassage: "Internal server error",
       error: err,
     });
+  }
+});
+
+app.post("/api/arithimetics", (req, res, next) => {
+  const { operation_type, x, y } = req.body;
+  parseInt(x);
+  parseInt(y);
+
+  try {
+    let result = 0;
+    if (operation_type["enum"] === "addition") {
+      result = x + y;
+    } else if (operation_type["enum"] === "subtraction") {
+      if (x > y) {
+        result = x - y;
+      } else {
+        result = y - x;
+      }
+    } else if (operation_type["enum"] === "multiplication") {
+      result = x * y;
+    }
+    else{
+      res.json({
+        message: "use a valid operator"
+      })
+    }
+    res.status(200).json({
+      slackUsername: "Oluperfect",
+      operation_type: `${operation_type["enum"]}`,
+      result: result,
+    });
+  } catch (err) {
+    next(err);
   }
 });
 

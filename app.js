@@ -30,38 +30,97 @@ app.get("/api/biodata", (req, res) => {
   }
 });
 
-app.post("/api/arithimetics", (req, res, next) => {
-  const { enumerator, x, y } = req.body;
-  parseInt(x);
-  parseInt(y);
 
-  try {
-    let result = 0;
-    if (enumerator["operation_type"] === "addition") {
-      result = x + y;
-    } else if (enumerator["operation_type"] === "subtraction") {
-      if (x > y) {
-        result = x - y;
-      } else {
-        result = y - x;
+
+app.post("/", (req, res) => {
+  let { operation_type, x, y } = req.body;
+  let result;
+
+  if (typeof x != "number" || typeof y != "number") {
+    let arr = operation_type.split(" ");
+    let numberCount = 0;
+
+    for (let i = 0; i < arr.length; i++) {
+      if (!isNaN(arr[i]) && numberCount < 2) {
+        if (numberCount === 0) {
+          x = arr[i];
+          console.log(arr[i]);
+        }
+        if (numberCount === 1) {
+          console.log(arr[i]);
+          y = arr[i];
+        }
+        numberCount++;
       }
-    } else if (enumerator["operation_type"] === "multiplication") {
-      result = x * y;
     }
-    else{
-      res.json({
-        message: "use a valid operator"
-      })
-    }
-    res.status(200).json({
-      slackUsername: "Oluperfect",
-      operation_type: `${enumerator["operation_type"]}`,
-      result: result,
-    });
-  } catch (err) {
-    next(err);
   }
+
+  // console.log(x, y);
+
+  x = parseInt(x);
+  y = parseInt(y);
+
+  //   operations object
+  let operation = {
+    adddition: x + y,
+    subtraction: x - y,
+    multiplication: x * y,
+    division: x / y,
+  };
+
+  //   additon: x + y,
+  if (
+    operation_type.includes("add") ||
+    operation_type.includes("sum") ||
+    operation_type.includes("plus") ||
+    operation_type.includes("+")
+  ) {
+    result = operation.adddition;
+    operation_type = "addition";
+  }
+
+  //   subtraction: x - y,
+  else if (
+    operation_type.includes("subtract") ||
+    operation_type.includes("minus") ||
+    operation_type.includes("-") ||
+    operation_type.includes("remove") ||
+    operation_type.includes("take away") ||
+    operation_type.includes("less")
+  ) {
+    result = operation.subtraction;
+    operation_type = "subtraction";
+  }
+
+  //   multiplication: x * y,
+  else if (
+    operation_type.includes("multiply") ||
+    operation_type.includes("*") ||
+    operation_type.includes("times")
+  ) {
+    result = operation.multiplication;
+    operation_type = "multiplication";
+  }
+
+  //   division: x / y,
+  else if (
+    operation_type.includes("divide") ||
+    operation_type.includes("/") ||
+    operation_type.includes("by")
+  ) {
+    result = operation.division;
+    operation_type = "division";
+  } else {
+    (result = "Invalid operation"), (operation_type = "Invalid operation");
+  }
+
+  res.setHeader("Content-Type", "application/json").json({
+    slackUsername: "Light",
+    operation_type: operation_type,
+    result: result,
+  });
 });
+
 
 app.listen(PORT, () => {
   console.log(`server listening at http://localhost:${PORT}`);

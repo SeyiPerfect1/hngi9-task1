@@ -31,21 +31,21 @@ app.get("/api/biodata", (req, res) => {
 });
 
 app.post("/api/arithimetics", (req, res, next) => {
-  const { operation_type, x, y } = req.body;
+  const { enumerator, x, y } = req.body;
   parseInt(x);
   parseInt(y);
 
   try {
     let result = 0;
-    if (operation_type["enum"] === "addition") {
+    if (enumerator["operation_type"] === "addition") {
       result = x + y;
-    } else if (operation_type["enum"] === "subtraction") {
+    } else if (enumerator["operation_type"] === "subtraction") {
       if (x > y) {
         result = x - y;
       } else {
         result = y - x;
       }
-    } else if (operation_type["enum"] === "multiplication") {
+    } else if (enumerator["operation_type"] === "multiplication") {
       result = x * y;
     }
     else{
@@ -55,7 +55,7 @@ app.post("/api/arithimetics", (req, res, next) => {
     }
     res.status(200).json({
       slackUsername: "Oluperfect",
-      operation_type: `${operation_type["enum"]}`,
+      operation_type: `${enumerator["operation_type"]}`,
       result: result,
     });
   } catch (err) {

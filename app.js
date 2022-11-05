@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
-const {arithmeticEnum, arithmetic } = require("./arithmetic");
+const { arithmeticEnum, arithmetic } = require("./arithmetic");
 
 const PORT = process.env.PORT || 4000;
 const app = express();
@@ -31,11 +31,13 @@ app.get("/", (req, res) => {
   }
 });
 
-
 app.post("/", (req, res) => {
   let { operation_type, x, y } = req.body;
+  //cast x and y to numbers
   parseInt(x);
   parseInt(y);
+
+  //check for operation/operation keywords
   let operationType =
     operation_type == arithmeticEnum.addition ||
     operation_type.includes("addition") ||
@@ -50,13 +52,23 @@ app.post("/", (req, res) => {
         operation_type.includes("remove")
       ? arithmeticEnum.subtraction
       : operation_type == arithmeticEnum.multiplication ||
-        operation_type.includes("miltiplication") ||
+        operation_type.includes("multiplication") ||
         operation_type.includes("multiply") ||
         operation_type.includes("times") ||
         operation_type.includes("of") ||
         operation_type.includes("*")
       ? arithmeticEnum.multiplication
       : "invalid";
+
+  //extract x and y
+  const regex = /\d+/gm;
+  const nums = operation_type.match(regex);
+  console.log(nums)
+  if (nums) {
+    x = parseInt(nums[0]);
+    y = parseInt(nums[1]);
+  }
+
   let finalResult = arithmetic(operationType, x, y);
   return res.status(200).json({
     slackUsername: "Oluperfect",

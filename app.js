@@ -1,6 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
+const {arithmeticEnum, arithmetic } = require("./arithmetic");
 
 const PORT = process.env.PORT || 4000;
 const app = express();
@@ -13,7 +14,7 @@ app.use(
 
 app.use(express.json());
 
-app.get("/api/biodata", (req, res) => {
+app.get("/", (req, res) => {
   try {
     res.setHeader("Content-Type", "application/json");
     res.status(200).json({
@@ -31,96 +32,38 @@ app.get("/api/biodata", (req, res) => {
 });
 
 
-
 app.post("/", (req, res) => {
   let { operation_type, x, y } = req.body;
-  let result;
-
-  if (typeof x != "number" || typeof y != "number") {
-    let arr = operation_type.split(" ");
-    let numberCount = 0;
-
-    for (let i = 0; i < arr.length; i++) {
-      if (!isNaN(arr[i]) && numberCount < 2) {
-        if (numberCount === 0) {
-          x = arr[i];
-          console.log(arr[i]);
-        }
-        if (numberCount === 1) {
-          console.log(arr[i]);
-          y = arr[i];
-        }
-        numberCount++;
-      }
-    }
-  }
-
-  // console.log(x, y);
-
-  x = parseInt(x);
-  y = parseInt(y);
-
-  //   operations object
-  let operation = {
-    adddition: x + y,
-    subtraction: x - y,
-    multiplication: x * y,
-    division: x / y,
-  };
-
-  //   additon: x + y,
-  if (
+  parseInt(x);
+  parseInt(y);
+  let operationType =
+    operation_type == arithmeticEnum.addition ||
+    operation_type.includes("addition") ||
     operation_type.includes("add") ||
-    operation_type.includes("sum") ||
     operation_type.includes("plus") ||
     operation_type.includes("+")
-  ) {
-    result = operation.adddition;
-    operation_type = "addition";
-  }
-
-  //   subtraction: x - y,
-  else if (
-    operation_type.includes("subtract") ||
-    operation_type.includes("minus") ||
-    operation_type.includes("-") ||
-    operation_type.includes("remove") ||
-    operation_type.includes("take away") ||
-    operation_type.includes("less")
-  ) {
-    result = operation.subtraction;
-    operation_type = "subtraction";
-  }
-
-  //   multiplication: x * y,
-  else if (
-    operation_type.includes("multiply") ||
-    operation_type.includes("*") ||
-    operation_type.includes("times")
-  ) {
-    result = operation.multiplication;
-    operation_type = "multiplication";
-  }
-
-  //   division: x / y,
-  else if (
-    operation_type.includes("divide") ||
-    operation_type.includes("/") ||
-    operation_type.includes("by")
-  ) {
-    result = operation.division;
-    operation_type = "division";
-  } else {
-    (result = "Invalid operation"), (operation_type = "Invalid operation");
-  }
-
-  res.setHeader("Content-Type", "application/json").json({
-    slackUsername: "Light",
-    operation_type: operation_type,
-    result: result,
+      ? arithmeticEnum.addition
+      : operation_type == arithmeticEnum.subtraction ||
+        operation_type.includes("subtraction") ||
+        operation_type.includes("minus") ||
+        operation_type.includes("-") ||
+        operation_type.includes("remove")
+      ? arithmeticEnum.subtraction
+      : operation_type == arithmeticEnum.multiplication ||
+        operation_type.includes("miltiplication") ||
+        operation_type.includes("multiply") ||
+        operation_type.includes("times") ||
+        operation_type.includes("of") ||
+        operation_type.includes("*")
+      ? arithmeticEnum.multiplication
+      : "invalid";
+  let finalResult = arithmetic(operationType, x, y);
+  return res.status(200).json({
+    slackUsername: "Oluperfect",
+    result: finalResult,
+    operation_type: operationType,
   });
 });
-
 
 app.listen(PORT, () => {
   console.log(`server listening at http://localhost:${PORT}`);
